@@ -53,10 +53,22 @@
     zoomControl: !tactil, scrollWheelZoom: false, dragging: !tactil, tap: false,
     worldCopyJump: true, attributionControl: true
   });
-  L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
-    maxZoom: 18, subdomains: "abcd",
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
-  }).addTo(mapa);
+  /* Fondo del mapa: OpenStreetMap (gratis, sin clave). Si fallara, pasa solo a Esri. */
+  var fondos = [
+    ["https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+     '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'],
+    ["https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}",
+     'Tiles &copy; Esri &mdash; Esri, HERE, Garmin, &copy; OpenStreetMap']
+  ];
+  var nFondo = 0, fallos = 0, capa;
+  function ponerFondo() {
+    if (capa) mapa.removeLayer(capa);
+    capa = L.tileLayer(fondos[nFondo][0], { maxZoom: 18, attribution: fondos[nFondo][1] }).addTo(mapa);
+    capa.on("tileerror", function () {
+      if (++fallos > 4 && nFondo < fondos.length - 1) { nFondo++; fallos = 0; ponerFondo(); }
+    });
+  }
+  ponerFondo();
 
   var puntos = [];
   V.forEach(function (v) {

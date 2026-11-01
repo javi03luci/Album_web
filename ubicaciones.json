@@ -18,8 +18,8 @@
   "2026/Italia/San Vito Lo Capo": [38.18, 12.73],
   "2026/Italia/Taormina": [37.85, 15.29],
   "2026/Leuven": [50.88, 4.71],
-  "2026/Namur y Bruselas/Bruselas": [50.85, 4.36],
-  "2026/Namur y Bruselas/Leuven": [50.88, 4.7],
-  "2026/Namur y Bruselas/Namur": [50.46, 4.87],
+  "2026/Leuven/Bruselas": [50.85, 4.36],
+  "2026/Leuven/Leuven": [50.88, 4.7],
+  "2026/Leuven/Namur": [50.46, 4.87],
   "2026/Suiza": [47.37, 8.7]
 }
