@@ -16,25 +16,37 @@
   $("p-fechas").textContent = A.fechas;
 
   /* ---------- introducción ---------- */
-  var intro = $("intro"), filtro = "";
+  var intro = $("intro"), filtro = "";  /* filtro ya no se usa: cada ciudad tiene su página */
   intro.innerHTML = '<div class="adorno"><svg class="corazon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2.1 0 3.6 1.2 4.3 2.6h2c.7-1.4 2.2-2.6 4.3-2.6 3.7 0 5.8 3.9 4.3 7.3C19.5 16.4 12 21 12 21z"/></svg></div>';
   if (A.frase) intro.appendChild(el("p", "frase", A.frase));
-  var conTitulo = A.secciones.filter(function (s) { return s.titulo; });
-  if (conTitulo.length > 1) {
-    var chips = el("div", "chips");
-    var hacerChip = function (texto, valor) {
-      var c = el("button", "chip", texto);
-      c.setAttribute("aria-pressed", valor === filtro ? "true" : "false");
-      c.addEventListener("click", function () {
-        filtro = valor;
-        chips.querySelectorAll(".chip").forEach(function (x) { x.setAttribute("aria-pressed", x === c ? "true" : "false"); });
-        pintarGaleria();
-        var g = $("galeria"); window.scrollTo({ top: g.getBoundingClientRect().top + window.pageYOffset - 8 });
-      });
+  /* Botones de ciudades: cada uno abre la página (URL) de esa ciudad; el abierto queda marcado */
+  /* En la página del viaje: un recuadro por ciudad que abre su álbum */
+  if (!A.padre && (A.ciudades || []).length) {
+    var rec = el("div", "tarjetas recuadros");
+    A.ciudades.forEach(function (c) {
+      var t = el("a", "tarjeta");
+      t.href = c.url;
+      t.style.setProperty("--c", c.color || "#cfc4b8");
+      var im = el("img"); im.loading = "lazy"; im.decoding = "async"; im.alt = ""; im.src = R + c.portada; alCargar(im);
+      var tx = el("div", "t");
+      tx.appendChild(el("b", "", c.titulo));
+      tx.appendChild(el("span", "", c.n + (c.n === 1 ? " foto" : " fotos")));
+      t.appendChild(im); t.appendChild(tx); rec.appendChild(t);
+    });
+    intro.appendChild(rec);
+  }
+  var lista = A.padre ? (A.hermanos || []) : [];
+  if (lista.length > 1) {
+    var chips = el("nav", "chips");
+    chips.setAttribute("aria-label", "Ciudades del viaje");
+    var hacerChip = function (texto, href, activo) {
+      var c = el("a", "chip", texto);
+      c.href = href;
+      if (activo) c.setAttribute("aria-current", "page");
       chips.appendChild(c);
     };
-    hacerChip("Todo", "");
-    conTitulo.forEach(function (s) { hacerChip(s.titulo, s.titulo); });
+    hacerChip(A.padre ? "Todo " + A.padre.titulo : "Todo", A.padre ? "../" : "./", !A.padre);
+    lista.forEach(function (c) { hacerChip(c.titulo, c.url, A.padre && c.titulo === A.titulo); });
     intro.appendChild(chips);
   }
   var nCiud = A.lugares.length;

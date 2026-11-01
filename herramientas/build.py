@@ -398,7 +398,8 @@ def main():
         paginas.add(os.path.normpath(os.path.join(dest, 'index.html')))
 
     for d in datos:
-        d_pag = dict(d, ciudades=[{'titulo': c['titulo'], 'url': c['slug'] + '/'} for c in d['ciudades']])
+        d_pag = dict(d, ciudades=[{'titulo': c['titulo'], 'url': c['slug'] + '/', 'n': c['n'],
+                                    'portada': c['portada']['m'], 'color': c['portada']['color']} for c in d['ciudades']])
         escribir_album(d['url'], d_pag, '../../', '../../', 'Nuestros viajes', 'Ver todos nuestros viajes')
         for c in d['ciudades']:
             c_pag = {
@@ -406,6 +407,7 @@ def main():
                 'fechas_propias': bool(c['fechas_c']) or d['fechas_propias'], 'frase': c['frase'],
                 'lugares': [], 'n': c['n'], 'portada': c['portada'], 'ciudades': [],
                 'padre': {'titulo': d['titulo'], 'url': '../'},
+                'hermanos': [{'titulo': h['titulo'], 'url': '../' + h['slug'] + '/'} for h in d['ciudades']],
                 'secciones': [{'titulo': '', 'fotos': c['fotos']}],
             }
             escribir_album(d['url'] + c['slug'] + '/', c_pag, '../../../', '../', d['titulo'],
