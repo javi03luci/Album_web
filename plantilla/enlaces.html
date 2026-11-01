@@ -24,15 +24,18 @@
 <script>
 (function () {
   var base = location.href.replace(/[#?].*$/, "").replace(/enlaces(\.html)?$/, "");
-  var filas = [{ titulo: "Página principal (mapa)", url: "", img: null }].concat(
-    window.SITIO.viajes.map(function (v) { return { titulo: v.titulo + " · " + v.anio, url: v.url, img: v.portada.m }; }));
+  var filas = [{ titulo: "Página principal (mapa)", url: "", img: null }];
+  window.SITIO.viajes.forEach(function (v) {
+    filas.push({ titulo: v.titulo + " · " + v.anio, url: v.url, img: v.portada.m });
+    (v.ciudades || []).forEach(function (c) { filas.push({ titulo: c.titulo, url: c.url, img: c.portada, sub: v.titulo }); });
+  });
   var lista = document.getElementById("lista");
   filas.forEach(function (f) {
     var full = base + f.url;
-    var d = document.createElement("div"); d.className = "enlace";
+    var d = document.createElement("div"); d.className = "enlace" + (f.sub ? " sub" : "");
     if (f.img) { var i = document.createElement("img"); i.src = f.img; i.alt = ""; i.loading = "lazy"; d.appendChild(i); }
     var t = document.createElement("div"); t.className = "txt";
-    var b = document.createElement("b"); b.textContent = f.titulo;
+    var b = document.createElement("b"); b.textContent = f.sub ? f.titulo + "  ·  " + f.sub : f.titulo;
     var c = document.createElement("code"); c.textContent = full;
     t.appendChild(b); t.appendChild(c); d.appendChild(t);
     var btn = document.createElement("button"); btn.textContent = "Copiar";

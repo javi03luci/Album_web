@@ -34,6 +34,11 @@ Reglas:
 
 **La URL de cada viaje** es `/AÑO/nombre-del-viaje/` (sin tildes ni espacios):
 `2026/Italia` → `/2026/italia/`, `2025/Altea y Benidorm` → `/2025/altea-y-benidorm/`.
+**Cada ciudad tiene además su propia página**: `/AÑO/viaje/ciudad/`, por ejemplo
+`2026/Italia/Taormina` → `/2026/italia/taormina/`. Sirve también para una etiqueta NFC.
+Dentro de una carpeta de ciudad puedes poner su propia portada (`portada…`),
+`frase.txt` y `fechas.txt`.
+
 Si cambias el nombre de la carpeta o del año, **la URL cambia** y habría que regrabar su etiqueta NFC.
 
 ---
@@ -85,7 +90,7 @@ cambios: lo que desaparece de las carpetas desaparece de la web.
 ## 3 · Enlaces para las etiquetas NFC
 
 Abre **`https://TU-USUARIO.github.io/viajes/enlaces.html`** (en el móvil):
-lista todos los viajes con su URL completa y un botón **Copiar**.
+lista todos los viajes **y sus ciudades** con su URL completa y un botón **Copiar**.
 
 **Grabar una etiqueta** con la app gratuita **NFC Tools** (iPhone o Android):
 1. **Escribir** → **Añadir un registro** → **URL / URI** → pega el enlace → OK.

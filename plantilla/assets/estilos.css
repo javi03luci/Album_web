@@ -67,6 +67,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .dia-cab{position:sticky;top:0;z-index:5;display:flex;align-items:baseline;gap:12px;
   padding:16px var(--lado) 12px;background:linear-gradient(var(--papel) 75%,rgba(247,243,238,0))}
 .dia-cab .n{font-family:var(--serif);font-style:italic;font-size:1.55rem;color:var(--rosa-osc)}
+.dia-cab .ver-ciudad{margin-left:auto;font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:var(--rosa-osc);white-space:nowrap;padding:6px 0}
 .dia-cab .f{font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--suave)}
 .rejilla{display:flex;flex-wrap:wrap;gap:var(--hueco)}
 .rejilla::after{content:"";flex-grow:999999}
@@ -156,3 +157,6 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .enlace b{display:block;font-family:var(--serif);font-weight:400;font-size:1.3rem;line-height:1.1}
 .enlace code{display:block;font-size:.74rem;color:var(--suave);overflow-wrap:anywhere}
 .enlace button{flex:none;border:1px solid var(--linea);border-radius:999px;padding:8px 14px;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase}
+.enlace.sub{padding-left:28px}
+.enlace.sub img{width:40px;height:40px}
+.enlace.sub b{font-size:1.1rem}

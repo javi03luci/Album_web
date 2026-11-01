@@ -11,7 +11,7 @@
 
   /* ---------- portada ---------- */
   alCargar(document.querySelector(".portada img"));
-  $("p-ante").textContent = A.fechas_propias ? A.anio : "";
+  $("p-ante").textContent = A.padre ? A.padre.titulo : (A.fechas_propias ? A.anio : "");
   $("p-lugares").textContent = A.lugares.filter(function (l) { return l !== A.titulo; }).slice(0, 3).join(" · ");
   $("p-fechas").textContent = A.fechas;
 
@@ -40,6 +40,13 @@
   var nCiud = A.lugares.length;
   intro.appendChild(el("p", "datos", A.n.toLocaleString("es-ES") + " fotos" + (nCiud > 1 ? " · " + nCiud + " lugares" : "")));
 
+  if (A.padre) {
+    var pie = document.querySelector(".pie-pag");
+    var otro = el("div"); otro.style.marginTop = "12px";
+    var lk2 = el("a", "", "Todos nuestros viajes"); lk2.href = R; lk2.style.cssText = "font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--suave)";
+    otro.appendChild(lk2); pie.appendChild(otro);
+  }
+
   /* ---------- galería: una sección por carpeta de ciudad ---------- */
   var fotos = [], gal = $("galeria");
   function pintarGaleria() {
@@ -52,6 +59,8 @@
         var cab = el("div", "dia-cab");
         cab.appendChild(el("span", "n", s.titulo));
         cab.appendChild(el("span", "f", s.fotos.length + (s.fotos.length === 1 ? " foto" : " fotos")));
+        var pag = (A.ciudades || []).filter(function (c) { return c.titulo === s.titulo; })[0];
+        if (pag) { var lk = el("a", "ver-ciudad", "Abrir álbum →"); lk.href = pag.url; cab.appendChild(lk); }
         sec.appendChild(cab);
       }
       var rej = el("div", s.fotos.length <= 2 ? "rejilla pocas" : "rejilla");

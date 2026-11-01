@@ -33,8 +33,9 @@ except ImportError:
 AQUI = os.path.dirname(os.path.abspath(__file__))
 RAIZ = os.path.dirname(AQUI)
 EXT = ('.jpg', '.jpeg', '.heic', '.heif', '.png', '.webp')
-GRANDE, MINI = 1600, 560
-CAL_G, CAL_M = 74, 64
+GRANDE, MINI = 2560, 800          # lado largo máximo (nunca se amplía una foto)
+CAL_G, CAL_M = 86, 80             # calidad WebP (0-100)
+VERSION_COPIAS = f"{GRANDE}-{CAL_G}-{MINI}-{CAL_M}"   # si cambias la calidad, se regeneran solas
 
 
 # ---------------------------------------------------------------- utilidades
@@ -250,7 +251,7 @@ def main():
     trabajos, usados = [], set()
     for v in viajes:
         for f in v['fotos']:
-            h = hashlib.md5(f['rel'].encode()).hexdigest()[:12]
+            h = hashlib.md5((f['rel'] + VERSION_COPIAS).encode()).hexdigest()[:12]
             f['g'] = f"fotos/{v['anio']}/{v['slug']}/g/{h}.webp"
             f['m'] = f"fotos/{v['anio']}/{v['slug']}/m/{h}.webp"
             usados.update((f['g'], f['m']))
@@ -305,13 +306,38 @@ def main():
             horiz = [f for f in orden if f['w'] > f['h'] * 1.2] or orden
             port = horiz[len(horiz) // 3]
 
+        def elegir_portada(lista):
+            p = next((f for f in lista if f['nombre'].lower().startswith('portada')), None)
+            if p:
+                return p
+            o = sorted(lista, key=orden_f)
+            hz = [f for f in o if f['w'] > f['h'] * 1.2] or o
+            return hz[len(hz) // 3]
+
+        def ficha_portada(p):
+            return {'g': p['g'], 'm': p['m'], 'w': p['w'], 'h': p['h'],
+                    'color': color_medio(os.path.join(a.salida, p['m']))}
+
+        paginas_ciudad = []
+        for s in secciones:
+            if not s['titulo'] or s['titulo'] == 'Otros momentos':
+                continue
+            dir_c = os.path.join(v['dir'], s['titulo'])
+            paginas_ciudad.append({
+                'titulo': s['titulo'], 'slug': slugify(s['titulo']),
+                'frase': leer_txt(os.path.join(dir_c, 'frase.txt')),
+                'fechas_c': leer_txt(os.path.join(dir_c, 'fechas.txt')),
+                'n': len(s['fotos']), 'portada': ficha_portada(elegir_portada(s['fotos'])),
+                'fotos': [{'g': f['g'], 'm': f['m'], 'w': f['w'], 'h': f['h']} for f in s['fotos']],
+            })
+
         fechas_txt = leer_txt(os.path.join(v['dir'], 'fechas.txt'))
         datos.append({
             'titulo': v['titulo'], 'slug': v['slug'], 'anio': v['anio'], 'url': f"{v['anio']}/{v['slug']}/",
             'fechas': fechas_txt or str(v['anio']), 'fechas_propias': bool(fechas_txt),
             'frase': leer_txt(os.path.join(v['dir'], 'frase.txt')),
             'lugares': [l['nombre'] for l in lugares], 'pos': pos_v, 'origen_pos': origen,
-            'n': len(fs), 'orden': min((f.get('t') or '9999') for f in fs),
+            'n': len(fs), 'orden': min((f.get('t') or '9999') for f in fs), 'ciudades': paginas_ciudad,
             'portada': {'g': port['g'], 'm': port['m'], 'w': port['w'], 'h': port['h'],
                         'color': color_medio(os.path.join(a.salida, port['m']))},
             'secciones': [{'titulo': s['titulo'], 'fotos': [
@@ -345,8 +371,9 @@ def main():
         with open(os.path.join(plant, nombre), encoding='utf-8') as f:
             return f.read()
 
-    resumen = [{k: d[k] for k in ('titulo', 'url', 'anio', 'fechas', 'lugares', 'pos', 'origen_pos', 'n', 'portada')}
-               for d in datos]
+    resumen = [dict({k: d[k] for k in ('titulo', 'url', 'anio', 'fechas', 'lugares', 'pos', 'origen_pos', 'n', 'portada')},
+                    ciudades=[{'titulo': c['titulo'], 'url': d['url'] + c['slug'] + '/', 'portada': c['portada']['m']}
+                              for c in d['ciudades']]) for d in datos]
     datos_sitio = js({'sitio': sitio, 'viajes': resumen})
     for nombre in ('index.html', 'enlaces.html'):
         html = (plantilla(nombre).replace('{{TITULO}}', esc(sitio.get('titulo')))
@@ -356,16 +383,33 @@ def main():
 
     t_album = plantilla('album.html')
     paginas = set()
-    for d in datos:
-        dest = os.path.join(a.salida, d['url'])
+
+    def escribir_album(url, datos_pag, raiz, volver_url, volver_txt, volver_largo):
+        dest = os.path.join(a.salida, url)
         os.makedirs(dest, exist_ok=True)
-        desc = ' · '.join(x for x in [', '.join(d['lugares'][:3]), d['fechas']] if x)
-        html = (t_album.replace('{{TITULO}}', esc(d['titulo'])).replace('{{SITIO}}', esc(sitio.get('titulo')))
-                .replace('{{DESCRIPCION}}', esc(desc)).replace('{{PORTADA}}', '../../' + d['portada']['g'])
-                .replace('{{COLOR}}', d['portada']['color']).replace('{{DATOS}}', js(d)))
+        desc = ' · '.join(x for x in [', '.join(datos_pag['lugares'][:3]), datos_pag['fechas']] if x)
+        html = (t_album.replace('{{TITULO}}', esc(datos_pag['titulo'])).replace('{{SITIO}}', esc(sitio.get('titulo')))
+                .replace('{{DESCRIPCION}}', esc(desc)).replace('{{PORTADA}}', raiz + datos_pag['portada']['g'])
+                .replace('{{COLOR}}', datos_pag['portada']['color']).replace('{{VOLVER_URL}}', volver_url)
+                .replace('{{VOLVER_TXT}}', esc(volver_txt)).replace('{{VOLVER_LARGO}}', esc(volver_largo))
+                .replace('{{RAIZ}}', raiz).replace('{{DATOS}}', js(datos_pag)))
         with open(os.path.join(dest, 'index.html'), 'w', encoding='utf-8') as f:
             f.write(html)
         paginas.add(os.path.normpath(os.path.join(dest, 'index.html')))
+
+    for d in datos:
+        d_pag = dict(d, ciudades=[{'titulo': c['titulo'], 'url': c['slug'] + '/'} for c in d['ciudades']])
+        escribir_album(d['url'], d_pag, '../../', '../../', 'Nuestros viajes', 'Ver todos nuestros viajes')
+        for c in d['ciudades']:
+            c_pag = {
+                'titulo': c['titulo'], 'anio': d['anio'], 'fechas': c['fechas_c'] or d['fechas'],
+                'fechas_propias': bool(c['fechas_c']) or d['fechas_propias'], 'frase': c['frase'],
+                'lugares': [], 'n': c['n'], 'portada': c['portada'], 'ciudades': [],
+                'padre': {'titulo': d['titulo'], 'url': '../'},
+                'secciones': [{'titulo': '', 'fotos': c['fotos']}],
+            }
+            escribir_album(d['url'] + c['slug'] + '/', c_pag, '../../../', '../', d['titulo'],
+                           f"Ver todo el viaje: {d['titulo']}")
 
     # 6) Limpieza: fotos y páginas de viajes que ya no existen en las carpetas
     borradas = 0

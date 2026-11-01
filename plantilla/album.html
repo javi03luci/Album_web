@@ -13,16 +13,16 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@300;400&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="{{PORTADA}}">
-<link rel="stylesheet" href="../../assets/estilos.css">
-<link rel="icon" href="../../assets/icono.svg" type="image/svg+xml">
+<link rel="stylesheet" href="{{RAIZ}}assets/estilos.css">
+<link rel="icon" href="{{RAIZ}}assets/icono.svg" type="image/svg+xml">
 </head>
-<body data-raiz="../../">
+<body data-raiz="{{RAIZ}}">
 
 <header class="portada" id="portada" style="--color:{{COLOR}}">
   <nav class="barra-sup">
-    <a href="../../" aria-label="Ver todos nuestros viajes">
+    <a href="{{VOLVER_URL}}" aria-label="{{VOLVER_TXT}}">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 4 3 6.5v14L9 18l6 2.5 6-2.5V4l-6 2.5L9 4Zm0 0v14m6-11.5v14"/></svg>
-      Nuestros viajes
+      {{VOLVER_TXT}}
     </a>
   </nav>
   <img src="{{PORTADA}}" alt="" fetchpriority="high">
@@ -42,7 +42,7 @@
 
 <footer class="pie-pag aparece">
   <svg class="corazon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2.1 0 3.6 1.2 4.3 2.6h2c.7-1.4 2.2-2.6 4.3-2.6 3.7 0 5.8 3.9 4.3 7.3C19.5 16.4 12 21 12 21z"/></svg>
-  <div><a class="volver" href="../../">Ver todos nuestros viajes</a></div>
+  <div><a class="volver" href="{{VOLVER_URL}}">{{VOLVER_LARGO}}</a></div>
 </footer>
 
 <div class="visor" id="visor" role="dialog" aria-modal="true" aria-label="Visor de fotos">
@@ -55,6 +55,6 @@
 </div>
 
 <script>window.ALBUM = {{DATOS}};</script>
-<script src="../../assets/album.js"></script>
+<script src="{{RAIZ}}assets/album.js"></script>
 </body>
 </html>
