@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>{{TITULO}}</title>
+<meta name="description" content="{{SUBTITULO}}">
+<meta name="theme-color" content="#f7f3ee">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/leaflet/leaflet.css">
+<link rel="stylesheet" href="assets/estilos.css">
+<link rel="icon" href="assets/icono.svg" type="image/svg+xml">
+</head>
+<body data-raiz="">
+
+<header class="inicio-cab">
+  <div class="antetitulo aparece">{{SUBTITULO}}</div>
+  <h1 class="titulo aparece">{{TITULO}}</h1>
+  <div class="adorno aparece"><svg class="corazon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2.1 0 3.6 1.2 4.3 2.6h2c.7-1.4 2.2-2.6 4.3-2.6 3.7 0 5.8 3.9 4.3 7.3C19.5 16.4 12 21 12 21z"/></svg></div>
+  <p class="resumen aparece" id="resumen" style="margin-top:18px"></p>
+</header>
+
+<section class="mapa-caja aparece" aria-label="Mapa de nuestros viajes"><div id="mapa"></div></section>
+
+<main id="lista"></main>
+
+<footer class="pie-pag">
+  <svg class="corazon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2.1 0 3.6 1.2 4.3 2.6h2c.7-1.4 2.2-2.6 4.3-2.6 3.7 0 5.8 3.9 4.3 7.3C19.5 16.4 12 21 12 21z"/></svg>
+</footer>
+
+<script>window.SITIO = {{DATOS}};</script>
+<script src="assets/leaflet/leaflet.js"></script>
+<script src="assets/inicio.js"></script>
+</body>
+</html>

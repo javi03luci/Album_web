@@ -1,0 +1,9 @@
+* text=auto
+*.jpg binary
+*.jpeg binary
+*.JPG binary
+*.JPEG binary
+*.heic binary
+*.HEIC binary
+*.png binary
+*.webp binary

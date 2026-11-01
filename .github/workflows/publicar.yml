@@ -1,0 +1,56 @@
+# Publica la web automáticamente cada vez que cambias algo en el repositorio
+# (añadir, quitar o mover fotos y carpetas dentro de "fotos/").
+name: Publicar álbum
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:        # botón "Run workflow" para publicar a mano
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.despliegue.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Instalar herramientas
+        run: pip install pillow pillow-heif
+
+      # Guarda las copias web ya hechas para no recalcular 3.000 fotos cada vez
+      - name: Recuperar copias web anteriores
+        uses: actions/cache@v4
+        with:
+          path: |
+            _web
+            _cache
+          key: web-${{ github.run_id }}
+          restore-keys: web-
+
+      - name: Generar la web
+        run: python herramientas/build.py --salida _web --cache _cache
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _web
+
+      - name: Publicar en GitHub Pages
+        id: despliegue
+        uses: actions/deploy-pages@v4

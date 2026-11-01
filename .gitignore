@@ -1,0 +1,9 @@
+# Web generada (la crea GitHub automáticamente)
+_web/
+_cache/
+docs/
+__pycache__/
+*.tmp
+Thumbs.db
+desktop.ini
+.DS_Store
